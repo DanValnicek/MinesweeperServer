@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="d9f47b44-4bc6-4444-b810-4afee8cbee7d" name="minesweeperServer">
+        <fileTransfer accessType="SFTP" host="165.22.76.230" port="22" sshConfigId="9c5f9ee3-651f-4b2d-9575-abcc1a0995b2" sshConfig="sftp_dvalnicek@165.22.76.230:22 agent" authAgent="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" maxConnections="1" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

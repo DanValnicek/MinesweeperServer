@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         System.out.println("Server Started");
         try {
-            new Server("127.0.0.1", 56850);
+            new Server("165.22.76.230", 56850);
             while (true) {
                 Thread.sleep(10 * 1000);
             }

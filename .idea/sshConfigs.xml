@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SshConfigs">
     <configs>
-      <sshConfig authType="OPEN_SSH" host="165.22.76.230" id="9c5f9ee3-651f-4b2d-9575-abcc1a0995b2" port="22" nameFormat="DESCRIPTIVE" username="sftp_dvalnicek" />
+      <sshConfig authType="OPEN_SSH" host="165.22.76.230" id="9c5f9ee3-651f-4b2d-9575-abcc1a0995b2" port="22" nameFormat="DESCRIPTIVE" username="root" />
     </configs>
   </component>
 </project>

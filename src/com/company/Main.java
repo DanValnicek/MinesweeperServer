@@ -10,7 +10,7 @@ public class Main {
         try {
             new Server("165.22.76.230", 56850);
             while (true) {
-                Thread.sleep(10 * 1000);
+                Thread.sleep( 1000);
             }
         } catch (Exception ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);

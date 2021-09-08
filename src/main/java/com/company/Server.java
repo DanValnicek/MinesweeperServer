@@ -1,6 +1,7 @@
 package com.company;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -23,8 +24,9 @@ public class Server {
             ServerBootstrap bootstrap = new ServerBootstrap()
                     .group(bossGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChatServerInitializer());
-            bootstrap.bind(port).sync().channel().closeFuture().sync();
+                    .localAddress(port);
+            bootstrap.childHandler(new ChatServerInitializer());
+            ChannelFuture future = bootstrap.bind(port).sync().channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
             e.printStackTrace();

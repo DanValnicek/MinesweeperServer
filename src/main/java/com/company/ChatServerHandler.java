@@ -2,6 +2,7 @@ package com.company;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -13,28 +14,35 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("idk handlerAdded");
         Channel incoming = ctx.channel();
+
+        channels.add(ctx.channel());
         for (Channel channel : channels) {
             channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " has joined!\n");
-
+            System.out.println("[SERVER] - " + incoming.remoteAddress() + " has joined!\n");
         }
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("idk handlerRemoved");
         Channel incoming = ctx.channel();
         for (Channel channel : channels) {
             channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " has left!\n");
+            System.out.println("[SERVER] - " + incoming.remoteAddress() + " has left!\n");
         }
         channels.remove(ctx.channel());
     }
 
-    protected void channelRead0(ChannelHandlerContext arg0, String message) throws Exception {
-        Channel incoming = arg0.channel();
+    public void channelRead0(ChannelHandlerContext ctx, String message) throws Exception {
+        System.out.println("idk channelRead");
+        Channel incoming = ctx.channel();
         for (Channel channel : channels) {
-            if (channel != incoming) {
-                channel.writeAndFlush("[" + incoming.remoteAddress() + "] " + message + "\n");
-            }
+//            if (channel != incoming) {
+                channel.writeAndFlush("[" + channel.remoteAddress() + "] " + message + "\n");
+                System.out.println("[" + channel.remoteAddress() + "] " + message + "\n");
+//            }
         }
     }
 

@@ -15,11 +15,6 @@
             <version>4.1.67.Final</version>
         </dependency>
 
-        <dependency>
-            <groupId>javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.12.1.GA</version>
-        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

@@ -23,11 +23,11 @@ public class Server {
 
 	private final int port;
 
-	public Server(int port) throws SQLException {
+	public Server(int port) {
 		this.port = port;
 	}
 
-	public Server(String bindAddr, int bindPort, int port) throws IOException, ExecutionException, InterruptedException, SQLException {
+	public Server(String bindAddr, int bindPort, int port) throws IOException, ExecutionException, InterruptedException {
 		this.port = port;
 		InetSocketAddress sockAddr = new InetSocketAddress(bindAddr, bindPort);
 
@@ -42,11 +42,7 @@ public class Server {
 				//a connection is accepted, start to accept next connection
 				serverSock.accept(serverSock, this);
 				//start to read message from the client
-				try {
-					startRead(sockChannel);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				startRead(sockChannel);
 
 			}
 
@@ -79,7 +75,7 @@ public class Server {
 		}
 	}
 
-	private void startRead(AsynchronousSocketChannel sockChannel) throws SQLException {
+	private void startRead(AsynchronousSocketChannel sockChannel) {
 		final ByteBuffer buf = ByteBuffer.allocate(2048);
 
 		//read message from client
@@ -96,11 +92,8 @@ public class Server {
 				startWrite(channel, buf);
 
 				//start to read next message again
-				try {
+
 					startRead(channel);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
 			}
 
 			@Override

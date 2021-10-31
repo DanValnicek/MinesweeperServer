@@ -41,6 +41,10 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 //            if (channel != incoming) {
 			channel.writeAndFlush("[" + channel.remoteAddress() + "] " + message + "\n");
 			System.out.println("[" + channel.remoteAddress() + "] " + message + "\n");
+			if (message.startsWith("reg:")) {
+				String[] messageData = message.split(":");
+				DBHandler.execQuery(DBHandler.getStatement().executeQuery("INSERT INTO Users (userName, password) VALUES (" + messageData[1] + ")"));
+			}
 //            }
 		}
 	}

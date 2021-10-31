@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -59,8 +59,6 @@ public class Server {
 
 	}
 
-		Connection sqlConn = DriverManager.getConnection("jdbc:mysql://165.22.76.230:3306/minesweeperDatabase", "workServ", "EnterTheDB1.");
-		Statement stmt = sqlConn.createStatement();
 	public void run() throws SQLException {
 
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -90,22 +88,9 @@ public class Server {
 			/**
 			 * some message is read from client, this callback will be called
 			 */
-			ResultSet resultSet = stmt.executeQuery("select * from Users");
 			@Override
 			public void completed(Integer result, AsynchronousSocketChannel channel) {
 				buf.flip();
-while (true){
-	try {
-		if (!resultSet.next()) break;
-	} catch (SQLException e) {
-		e.printStackTrace();
-	}
-	try {
-		System.out.println(resultSet.getInt(1)+"  "+resultSet.getString(2)+"  "+resultSet.getString(3));
-	} catch (SQLException e) {
-		e.printStackTrace();
-	}
-}
 				// echo the message
 				System.out.println("writing: " + buf);
 				startWrite(channel, buf);

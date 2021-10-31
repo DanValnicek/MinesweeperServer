@@ -10,10 +10,16 @@
     <dependencies>
         <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.27</version>
+        </dependency>
+        <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>4.1.67.Final</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 
     </dependencies>
     <properties>

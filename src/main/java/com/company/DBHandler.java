@@ -27,11 +27,11 @@ public class DBHandler {
 	}
 
 	public ResultSet executeQuery(String queryKey, String rawData) throws SQLException {
-		preparedStatement = connection.prepareStatement(queryKey);
+		preparedStatement = connection.prepareStatement(queries.get(queryKey));
 		String[] values = rawData.split(",");
-		for (int i = 0; i < values.length; i++) {
-			preparedStatement.setObject(i+1, values[i]);
-		}
+//		for (int i = 0; i < values.length; i++) {
+			preparedStatement.setObject(1, values);
+//		}
 		resultSet = preparedStatement.executeQuery();
 		return resultSet;
 	}

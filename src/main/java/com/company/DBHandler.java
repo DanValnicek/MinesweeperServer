@@ -29,7 +29,9 @@ public class DBHandler {
 	public ResultSet executeQuery(String queryKey, String rawData) throws SQLException {
 		preparedStatement = connection.prepareStatement(queryKey);
 		String[] values = rawData.split(",");
-		preparedStatement.setObject(1, values);
+		for (int i = 0; i < values.length; i++) {
+			preparedStatement.setObject(i+1, values[i]);
+		}
 		resultSet = preparedStatement.executeQuery();
 		return resultSet;
 	}

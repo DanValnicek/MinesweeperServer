@@ -26,20 +26,24 @@ public class DBHandler {
 	public DBHandler() {
 	}
 
-	public ResultSet executeQuery(String queryKey, String rawData) throws SQLException {
+	public void executeQuery(String type, String queryKey, String rawData) throws SQLException {
 		preparedStatement = connection.prepareStatement(queries.get(queryKey));
 		String[] values = rawData.split(",");
 //		for (int i = 0; i < values.length; i++) {
-			preparedStatement.setObject(1, values);
+		preparedStatement.setObject(1, values);
 //		}
-		resultSet = preparedStatement.executeQuery();
-		return resultSet;
+		if (type.equals("q")) {
+			System.out.println(preparedStatement.executeQuery());
+		} else if (type.equals("u")) {
+			System.out.println(preparedStatement.executeUpdate());
+		}
 	}
 
 	public void connect(String password) throws SQLException {
 		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/minesweeperDatabase",
 				"workServ", password);
 		statement = connection.createStatement();
+		System.out.println("Connected to DB");
 //		execQuery(statement.executeQuery("SELECT * FROM Users "));
 	}
 

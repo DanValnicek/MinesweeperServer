@@ -43,10 +43,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 			channel.writeAndFlush("[" + channel.remoteAddress() + "] " + message + "\n");
 			System.out.println("[" + channel.remoteAddress() + "] " + message + "\n");
 			String[] messageData = message.split(":");
-			if (message.startsWith("q:")) {
-
-				dbHandler.executeQuery(messageData[1], messageData[2]);
-			}
+				dbHandler.executeQuery(messageData[0],messageData[1], messageData[2]);
 		}
 //            }
 	}

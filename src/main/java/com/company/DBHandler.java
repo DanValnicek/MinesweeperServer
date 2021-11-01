@@ -29,9 +29,9 @@ public class DBHandler {
 	public void executeQuery(String type, String queryKey, String rawData) throws SQLException {
 		preparedStatement = connection.prepareStatement(queries.get(queryKey));
 		String[] values = rawData.split(",");
-//		for (int i = 0; i < values.length; i++) {
-		preparedStatement.setObject(1, values);
-//		}
+		for (int i = 0; i < values.length; i++) {
+		preparedStatement.setObject(i+1, values[i]);
+		}
 		if (type.equals("q")) {
 			System.out.println(preparedStatement.executeQuery());
 		} else if (type.equals("u")) {

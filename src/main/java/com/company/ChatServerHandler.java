@@ -10,6 +10,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
 	private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+	DBHandler dbHandler = new DBHandler();
 
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
@@ -41,12 +42,13 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 //            if (channel != incoming) {
 			channel.writeAndFlush("[" + channel.remoteAddress() + "] " + message + "\n");
 			System.out.println("[" + channel.remoteAddress() + "] " + message + "\n");
-			if (message.startsWith("reg:")) {
-				String[] messageData = message.split(":");
-				DBHandler.execQuery(DBHandler.getStatement().executeQuery("INSERT INTO Users (userName, password) VALUES (" + messageData[1] + ")"));
-			}
-//            }
-		}
-	}
+			String[] messageData = message.split(":");
+			if (message.startsWith("q:")) {
 
+				dbHandler.executeQuery(messageData[1], messageData[2]);
+			}
+		}
+//            }
+	}
 }
+

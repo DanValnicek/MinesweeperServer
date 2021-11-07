@@ -32,7 +32,11 @@ public class DBHandler {
 
 	public void executeQuery(String message) throws SQLException {
 		DbDoc json = JsonParser.parseDoc(message);
+		System.out.println(json.get("operation"));
+		System.out.println(json.get("queryType"));
+		System.out.println(queries.get(json.get("operation")));
 		preparedStatement = connection.prepareStatement(queries.get(json.get("operation")));
+		System.out.println(json.size());
 		for (int i = 0; i < json.size()-2; i++) {
 			System.out.println((i) + " value:" + json.get(i));
 			preparedStatement.setObject(i+1, json.get(i));

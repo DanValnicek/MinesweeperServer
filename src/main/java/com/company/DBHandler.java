@@ -1,5 +1,9 @@
 package com.company;
 
+import com.mysql.cj.xdevapi.DbDoc;
+import com.mysql.cj.xdevapi.JsonParser;
+import com.mysql.cj.xdevapi.JsonString;
+
 import java.sql.*;
 import java.util.Map;
 
@@ -17,7 +21,7 @@ public class DBHandler {
 //		}
 //	}
 	Map<String, String> queries = Map.of(
-			"reg", "insert into Users (userName, password) VALUES ( ?, SHA2(CONCAT(NOW(),?),256))"
+			"register", "insert into Users (userName, password) VALUES ( ?, SHA2(CONCAT(NOW(),?),256))"
 	);
 	private Statement statement = null;
 	private PreparedStatement preparedStatement = null;
@@ -26,16 +30,16 @@ public class DBHandler {
 	public DBHandler() {
 	}
 
-	public void executeQuery(String type, String queryKey, String rawData) throws SQLException {
-		preparedStatement = connection.prepareStatement(queries.get(queryKey));
-		String[] values = rawData.split(",");
-		for (int i = 0; i < values.length; i++) {
-			System.out.println((i + 1) + " value:" + values[i]);
-			preparedStatement.setObject(i + 1, values[i]);
+	public void executeQuery(String message) throws SQLException {
+		DbDoc json = JsonParser.parseDoc(message);
+		preparedStatement = connection.prepareStatement(queries.get(json.get("operation")));
+		for (int i = 0; i < json.size()-2; i++) {
+			System.out.println((i) + " value:" + json.get(i));
+			preparedStatement.setObject(i, json.get(i));
 		}
-		if (type.equals("q")) {
+		if (json.get("queryType").equals("query")) {
 			System.out.println(preparedStatement.executeQuery());
-		} else if (type.equals("u")) {
+		} else if (json.get("queryType").equals("update")) {
 			System.out.println(preparedStatement.executeUpdate());
 		}
 	}

@@ -1,5 +1,7 @@
 package com.company;
 
+import com.mysql.cj.xdevapi.JsonArray;
+import com.mysql.cj.xdevapi.JsonParser;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -42,8 +44,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 //            if (channel != incoming) {
 			channel.writeAndFlush("[" + channel.remoteAddress() + "] " + message + "\n");
 			System.out.println("[" + channel.remoteAddress() + "] " + message + "\n");
-			String[] messageData = message.split(":");
-				dbHandler.executeQuery(messageData[0],messageData[1], messageData[2]);
+				dbHandler.executeQuery(message);
 		}
 //            }
 	}

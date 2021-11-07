@@ -38,11 +38,11 @@ public class DBHandler {
 		preparedStatement = connection.prepareStatement(queries.get(json.get("operation").toString()));
 		int i = 0;
 //		System.out.println(json.containsKey(i));
-		System.out.println(json.containsKey(i));
-		System.out.println(json.get(i));
-		while (json.containsKey(i)) {
-			System.out.println(removeQuotes(json.get(i)));
-			preparedStatement.setObject(i + 1, removeQuotes(json.get(i)));
+		System.out.println(json.containsKey(Integer.toString(i)));
+		System.out.println(json.get(Integer.toString(i)));
+		while (json.containsKey(Integer.toString(i))) {
+			System.out.println(removeQuotes(json.get(Integer.toString(i))));
+			preparedStatement.setObject(i + 1, removeQuotes(json.get(Integer.toString(i))));
 			i++;
 		}
 		if (removeQuotes(json.get("queryType")).equals("query")) {

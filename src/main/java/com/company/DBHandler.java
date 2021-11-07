@@ -35,7 +35,7 @@ public class DBHandler {
 		preparedStatement = connection.prepareStatement(queries.get(json.get("operation")));
 		for (int i = 0; i < json.size()-2; i++) {
 			System.out.println((i) + " value:" + json.get(i));
-			preparedStatement.setObject(i, json.get(i));
+			preparedStatement.setObject(i+1, json.get(i));
 		}
 		if (json.get("queryType").equals("query")) {
 			System.out.println(preparedStatement.executeQuery());

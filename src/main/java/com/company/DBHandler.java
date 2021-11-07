@@ -36,11 +36,11 @@ public class DBHandler {
 		System.out.println(queries.get(json.get("operation").toString()));
 		preparedStatement = connection.prepareStatement(queries.get(json.get("operation").toString()));
 		int i = 0;
-		System.out.println(json.containsKey(i));
+//		System.out.println(json.containsKey(i));
 		System.out.println(json.containsKey(Integer.toString(i)));
 		System.out.println(json.get(Integer.toString(i)));
-		while (json.containsKey(i)) {
-			System.out.println(json.get(i));
+		while (json.containsKey(Integer.toString(i))) {
+			System.out.println(json.get(Integer.toString(i)));
 			preparedStatement.setObject(i + 1, json.get(Integer.toString(i)));
 			i++;
 		}

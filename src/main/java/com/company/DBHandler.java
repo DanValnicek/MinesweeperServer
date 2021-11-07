@@ -33,8 +33,8 @@ public class DBHandler {
 		DbDoc json = JsonParser.parseDoc(message);
 		System.out.println(json.get("operation"));
 		System.out.println(json.get("queryType"));
-		System.out.println(queries.get(json.get("operation")));
-		preparedStatement = connection.prepareStatement(queries.get(json.get("operation")));
+		System.out.println(queries.get(json.get("operation").toString()));
+		preparedStatement = connection.prepareStatement(queries.get(json.get("operation").toString()));
 		int i = 0;
 		System.out.println(json.containsKey(i));
 		System.out.println(json.containsKey(Integer.toString(i)));

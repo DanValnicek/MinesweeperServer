@@ -44,9 +44,9 @@ public class DBHandler {
 			preparedStatement.setObject(i + 1, json.get(Integer.toString(i)).toFormattedString());
 			i++;
 		}
-		if (json.get("queryType").equals("query")) {
+		if (json.get("queryType").toFormattedString().equals("query")) {
 			System.out.println(preparedStatement.executeQuery());
-		} else if (json.get("queryType").equals("update")) {
+		} else if (json.get("queryType").toFormattedString().equals("update")) {
 			System.out.println(preparedStatement.executeUpdate());
 		}
 	}

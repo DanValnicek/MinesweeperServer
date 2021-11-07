@@ -2,6 +2,7 @@ package com.company;
 
 import com.mysql.cj.xdevapi.DbDoc;
 import com.mysql.cj.xdevapi.JsonParser;
+import com.mysql.cj.xdevapi.JsonValue;
 
 import java.sql.*;
 import java.util.Map;
@@ -37,20 +38,24 @@ public class DBHandler {
 		preparedStatement = connection.prepareStatement(queries.get(json.get("operation").toString()));
 		int i = 0;
 //		System.out.println(json.containsKey(i));
-		System.out.println(json.containsKey(Integer.toString(i)));
-		System.out.println(json.get(Integer.toString(i)));
-		while (json.containsKey(Integer.toString(i))) {
-			System.out.println(json.get(Integer.toString(i)).toFormattedString());
-			preparedStatement.setObject(i + 1, json.get(Integer.toString(i)).toFormattedString());
+		System.out.println(json.containsKey(i));
+		System.out.println(json.get(i));
+		while (json.containsKey(i)) {
+			System.out.println(removeQuotes(json.get(i)));
+			preparedStatement.setObject(i + 1, removeQuotes(json.get(i)));
 			i++;
 		}
-		if (json.get("queryType").toFormattedString().equals("query")) {
+		if (removeQuotes(json.get("queryType")).equals("query")) {
 			System.out.println(preparedStatement.executeQuery());
-		} else if (json.get("queryType").toFormattedString().equals("\"update\"")) {
+		} else if (removeQuotes(json.get("queryType")).equals("update")) {
+
 			System.out.println(preparedStatement.executeUpdate());
 		}
 	}
-
+public String removeQuotes(JsonValue json){
+		String string = json.toFormattedString();
+		return string.substring(1,string.length()-1);
+}
 	public void connect(String password) throws SQLException {
 		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/minesweeperDatabase",
 				"workServ", password);

@@ -2,7 +2,6 @@ package com.company;
 
 import com.mysql.cj.xdevapi.DbDoc;
 import com.mysql.cj.xdevapi.JsonParser;
-import com.mysql.cj.xdevapi.JsonString;
 
 import java.sql.*;
 import java.util.Map;
@@ -36,10 +35,13 @@ public class DBHandler {
 		System.out.println(json.get("queryType"));
 		System.out.println(queries.get(json.get("operation")));
 		preparedStatement = connection.prepareStatement(queries.get(json.get("operation")));
-		int i=0;
-		while (json.containsValue(i)) {
+		int i = 0;
+		System.out.println(json.containsKey(i));
+		System.out.println(json.containsKey(Integer.toString(i)));
+		System.out.println(json.get(Integer.toString(i)));
+		while (json.containsKey(i)) {
 			System.out.println(json.get(i));
-			preparedStatement.setObject(i+1, json.get(Integer.toString(i)));
+			preparedStatement.setObject(i + 1, json.get(Integer.toString(i)));
 			i++;
 		}
 		if (json.get("queryType").equals("query")) {

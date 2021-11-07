@@ -40,8 +40,8 @@ public class DBHandler {
 		System.out.println(json.containsKey(Integer.toString(i)));
 		System.out.println(json.get(Integer.toString(i)));
 		while (json.containsKey(Integer.toString(i))) {
-			System.out.println(json.get(Integer.toString(i)));
-			preparedStatement.setObject(i + 1, json.get(Integer.toString(i)));
+			System.out.println(json.get(Integer.toString(i)).toFormattedString());
+			preparedStatement.setObject(i + 1, json.get(Integer.toString(i)).toFormattedString());
 			i++;
 		}
 		if (json.get("queryType").equals("query")) {

@@ -20,7 +20,7 @@ public class DBHandler {
 //		}
 //	}
 	Map<String, String> queries = Map.of(
-			"register", "insert into Users (userName, password) VALUES ( ?, SHA2(CONCAT(NOW(),?),256))"
+			"\"register\"", "insert into Users (userName, password) VALUES ( ?, SHA2(CONCAT(NOW(),?),256))"
 	);
 	private Statement statement = null;
 	private PreparedStatement preparedStatement = null;

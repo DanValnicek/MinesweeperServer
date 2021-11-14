@@ -19,11 +19,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 		System.out.println(incoming.toString());
 		System.out.println(channels);
 
-		for (Channel channel : channels) {
-			if (channel.localAddress() == incoming.localAddress()) {
-				channels.remove(channel);
-			}
-		}
+		channels.removeIf(channel -> channel.localAddress() == incoming.localAddress());
 
 		channels.add(incoming);
 		for (Channel channel : channels) {

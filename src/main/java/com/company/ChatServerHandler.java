@@ -16,9 +16,9 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		System.out.println("idk handlerAdded");
 		Channel incoming = ctx.channel();
-		if (!channels.contains(incoming)) {
-			channels.add(ctx.channel());
-		}
+		System.out.println(incoming.toString());
+		System.out.println(channels);
+		if (!channels.contains(incoming)) channels.add(incoming);
 		for (Channel channel : channels) {
 			channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " has joined!\n");
 			System.out.println("[SERVER] - " + incoming.remoteAddress() + " has joined!\n");

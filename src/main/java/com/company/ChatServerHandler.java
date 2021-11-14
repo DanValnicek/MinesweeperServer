@@ -1,7 +1,5 @@
 package com.company;
 
-import com.mysql.cj.xdevapi.JsonArray;
-import com.mysql.cj.xdevapi.JsonParser;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -18,8 +16,9 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		System.out.println("idk handlerAdded");
 		Channel incoming = ctx.channel();
-
-		channels.add(ctx.channel());
+		if (!channels.contains(incoming)) {
+			channels.add(ctx.channel());
+		}
 		for (Channel channel : channels) {
 			channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " has joined!\n");
 			System.out.println("[SERVER] - " + incoming.remoteAddress() + " has joined!\n");
@@ -44,7 +43,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 //            if (channel != incoming) {
 			channel.writeAndFlush("[" + channel.remoteAddress() + "] " + message + "\n");
 			System.out.println("[" + channel.remoteAddress() + "] " + message + "\n");
-				dbHandler.executeQuery(message);
+			dbHandler.executeQuery(message);
 		}
 //            }
 	}

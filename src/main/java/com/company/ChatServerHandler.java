@@ -19,14 +19,14 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 		System.out.println(incoming.toString());
 		System.out.println(channels);
 
-			boolean newUser = false;
+			boolean newUser = true;
 		for (Channel channel : channels) {
 			if (channel.localAddress() == incoming.localAddress()) {
-				newUser = true;
+				newUser = false;
 			}
 		}
 
-		if(!newUser) channels.add(incoming);
+		if(newUser) channels.add(incoming);
 		for (Channel channel : channels) {
 			channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " has joined!\n");
 			System.out.println("[SERVER] - " + incoming.remoteAddress() + " has joined!\n");

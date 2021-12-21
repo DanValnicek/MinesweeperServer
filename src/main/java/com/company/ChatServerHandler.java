@@ -1,11 +1,13 @@
 package com.company;
 
+import com.mysql.cj.xdevapi.JsonParser;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.json.simple.JSONObject;
 
 public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
@@ -23,8 +25,8 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
 		channels.add(incoming);
 		for (Channel channel : channels) {
-			channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " has joined!\n");
-			System.out.println("[SERVER] - " + incoming.remoteAddress() + " has joined!\n");
+			channel.writeAndFlush(JsonGenerator.createCallback("i", "[SERVER] - " + incoming.remoteAddress() + " has joined!"));
+			System.out.println(JsonGenerator.createCallback("i", "[SERVER] - " + incoming.remoteAddress() + " has joined!\n"));
 		}
 	}
 
@@ -33,22 +35,40 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 		System.out.println("idk handlerRemoved");
 		Channel incoming = ctx.channel();
 		for (Channel channel : channels) {
-			channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " has left!\n");
+			channel.writeAndFlush(JsonGenerator.createCallback("i", "[SERVER] - " + incoming.remoteAddress() + " has left!"));
 			System.out.println("[SERVER] - " + incoming.remoteAddress() + " has left!\n");
 		}
 		channels.remove(ctx.channel());
 	}
 
+	//TODO:
 	public void channelRead0(ChannelHandlerContext ctx, String message) throws Exception {
 		System.out.println("idk channelRead");
-		Channel incoming = ctx.channel();
-		for (Channel channel : channels) {
+//		for (Channel channel : channels) {
 //            if (channel != incoming) {
-			channel.writeAndFlush("[" + channel.remoteAddress() + "] " + message + "\n");
-			System.out.println("[" + channel.remoteAddress() + "] " + message + "\n");
-			dbHandler.executeQuery(message);
+		System.out.println("[" + ctx.channel().remoteAddress() + "] " + message + "\n");
+		JSONObject callBack;
+
+		try {
+			Input input = new Input(JsonParser.parseDoc(message));
+			callBack = input.validate();
+//			System.out.println("Validation message: " + callBack);
+			if (callBack.get("message") == null) {
+				if (input.operation.startsWith("u") || input.operation.startsWith("q")) {
+					callBack = dbHandler.executeQuery(input.args, input.operation);
+				} else {
+					callBack = null;
+				}
+			}
+		} catch (Exception e) {
+			callBack = JsonGenerator.createCallback("i", e.toString());
 		}
-//            }
+		if (callBack != null) {
+			System.out.println(callBack);
+			ctx.channel().writeAndFlush( callBack + "\n");
+		}
 	}
+//            }
 }
+
 

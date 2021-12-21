@@ -1,10 +1,9 @@
 package com.company;
 
-import com.mysql.cj.xdevapi.DbDoc;
-import com.mysql.cj.xdevapi.JsonParser;
-import com.mysql.cj.xdevapi.JsonValue;
+import org.json.simple.JSONObject;
 
 import java.sql.*;
+import java.util.List;
 import java.util.Map;
 
 public class DBHandler {
@@ -20,40 +19,58 @@ public class DBHandler {
 //			System.out.println("");
 //		}
 //	}
+	Map<String, String> updateQueries = Map.of("uRegister", "insert into minesweeperDatabase.Users (userName, password) VALUES ( ?, SHA2(CONCAT(NOW(),?),256))");
 	Map<String, String> queries = Map.of(
-			"\"register\"", "insert into Users (userName, password) VALUES ( ?, SHA2(CONCAT(NOW(),?),256))"
+//			"qLogin","select IF(password = SHA2(CONCAT(registered, ?), 256),JSON_ARRAY('true'),JSON_ARRAY('false'))from minesweeperDatabase.Users where userName = ?"
+			"qLogin", "select IF(password = SHA2(CONCAT(registered, ?), 256),'true','false')from minesweeperDatabase.Users where userName = ?"
 	);
-	private Statement statement = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
 
 	public DBHandler() {
 	}
 
-	public void executeQuery(String message) throws SQLException {
-		DbDoc json = JsonParser.parseDoc(message);
-		preparedStatement = connection.prepareStatement(queries.get(json.get("operation").toString()));
-		int i = 0;
-//		System.out.println(json.containsKey(i));
-		while (json.containsKey(Integer.toString(i))) {
-			preparedStatement.setObject(i + 1, removeQuotes(json.get(Integer.toString(i))));
-			i++;
+	public JSONObject executeQuery(List<String> args, String operation) throws SQLException {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+		if (operation.charAt(0) == 'u') {
+			preparedStatement = connection.prepareStatement(updateQueries.get(operation));
+		} else if (operation.charAt(0) == 'q') {
+			preparedStatement = connection.prepareStatement(queries.get(operation));
 		}
-		if (removeQuotes(json.get("queryType")).equals("query")) {
-			System.out.println(preparedStatement.executeQuery());
-		} else if (removeQuotes(json.get("queryType")).equals("update")) {
-
-			System.out.println(preparedStatement.executeUpdate());
+		if (preparedStatement == null) {
+			return JsonGenerator.createCallback("e", "Operation " + operation + " is invalid!");
+		}
+		for (int i = 0; i < args.size(); i++) {
+//			System.out.println(i + 1);
+//			System.out.println(args.get(i));
+			preparedStatement.setObject(i + 1, args.get(i));
+		}
+		if (operation.charAt(0) == 'u') {
+			System.out.println(preparedStatement);
+			preparedStatement.executeUpdate();
+			return JsonGenerator.createCallback("i", operation + "-ok");
+		} else {
+			resultSet = preparedStatement.executeQuery();
+//			JSONObject jsonObject = new JSONObject();
+			StringBuilder out = new StringBuilder(new String());
+			System.out.println(resultSet.getMetaData());
+			System.out.println(resultSet.getMetaData().getColumnCount());
+			try {
+				for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+					resultSet.next();
+					System.out.println(resultSet.getString(i));
+//				jsonObject.put(resultSet.getMetaData().getColumnName(i),resultSet.getString(i));
+//				System.out.println(jsonObject);
+					out.append(resultSet.getString(i));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return JsonGenerator.createCallback("q", out.toString());
 		}
 	}
-public String removeQuotes(JsonValue json){
-		String string = json.toFormattedString();
-		return string.substring(1,string.length()-1);
-}
+
 	public void connect(String password) throws SQLException {
-		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/minesweeperDatabase",
-				"workServ", password);
-		statement = connection.createStatement();
+		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/minesweeperDatabase", "workServ", password);
 		System.out.println("Connected to DB");
 //		execQuery(statement.executeQuery("SELECT * FROM Users "));
 	}

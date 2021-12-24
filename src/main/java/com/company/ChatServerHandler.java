@@ -9,6 +9,8 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.json.simple.JSONObject;
 
+import static com.company.MessageTypes.i;
+
 public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
 	private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -25,8 +27,8 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
 		channels.add(incoming);
 		for (Channel channel : channels) {
-			channel.writeAndFlush(JsonGenerator.createCallback("i", "[SERVER] - " + incoming.remoteAddress() + " has joined!"));
-			System.out.println(JsonGenerator.createCallback("i", "[SERVER] - " + incoming.remoteAddress() + " has joined!\n"));
+			channel.writeAndFlush(JsonGenerator.createCallback(i, "[SERVER] - " + incoming.remoteAddress() + " has joined!"));
+			System.out.println(JsonGenerator.createCallback(i, "[SERVER] - " + incoming.remoteAddress() + " has joined!\n"));
 		}
 	}
 
@@ -35,7 +37,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 		System.out.println("idk handlerRemoved");
 		Channel incoming = ctx.channel();
 		for (Channel channel : channels) {
-			channel.writeAndFlush(JsonGenerator.createCallback("i", "[SERVER] - " + incoming.remoteAddress() + " has left!"));
+			channel.writeAndFlush(JsonGenerator.createCallback(i, "[SERVER] - " + incoming.remoteAddress() + " has left!"));
 			System.out.println("[SERVER] - " + incoming.remoteAddress() + " has left!\n");
 		}
 		channels.remove(ctx.channel());
@@ -61,7 +63,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 				}
 			}
 		} catch (Exception e) {
-			callBack = JsonGenerator.createCallback("i", e.toString());
+			callBack = JsonGenerator.createCallback(i, e.toString());
 		}
 		if (callBack != null) {
 			System.out.println(callBack);

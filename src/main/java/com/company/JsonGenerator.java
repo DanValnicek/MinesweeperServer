@@ -9,10 +9,10 @@ public class JsonGenerator {
 	//n = notification
 	//q = query
 	//i = internal
-	public static JSONObject createCallback(String type, Object message) {
+	public static JSONObject createCallback(MessageTypes type, Object message) {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("messageType", type);
-		jsonObject.put("message", message);
+		jsonObject.put("message", message.toString());
 		return jsonObject;
 	}
 }

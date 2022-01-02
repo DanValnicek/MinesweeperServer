@@ -11,8 +11,8 @@ public class JsonGenerator {
 	//i = internal
 	public static JSONObject createCallback(MessageTypes type, Object message) {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("messageType", type);
-		jsonObject.put("message", message.toString());
+		jsonObject.put("messageType", type.toString());
+		jsonObject.put("message", message);
 		return jsonObject;
 	}
 }

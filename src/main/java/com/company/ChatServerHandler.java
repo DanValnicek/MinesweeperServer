@@ -63,6 +63,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			callBack = JsonGenerator.createCallback(i, e.toString());
 		}
 		if (callBack != null) {

@@ -12,12 +12,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.sql.SQLException;
-import java.util.concurrent.ExecutionException;
-
-/**
- * @author Steven Ou
- */
 
 public class Server {
 
@@ -27,7 +21,7 @@ public class Server {
 		this.port = port;
 	}
 
-	public Server(String bindAddr, int bindPort, int port) throws IOException, ExecutionException, InterruptedException {
+	public Server(String bindAddr, int bindPort, int port) throws IOException {
 		this.port = port;
 		InetSocketAddress sockAddr = new InetSocketAddress(bindAddr, bindPort);
 
@@ -35,7 +29,7 @@ public class Server {
 		AsynchronousServerSocketChannel serverSock = AsynchronousServerSocketChannel.open().bind(sockAddr);
 
 		//start to accept the connection from client
-		serverSock.accept(serverSock, new CompletionHandler<AsynchronousSocketChannel, AsynchronousServerSocketChannel>() {
+		serverSock.accept(serverSock, new CompletionHandler<>() {
 
 			@Override
 			public void completed(AsynchronousSocketChannel sockChannel, AsynchronousServerSocketChannel serverSock) {
@@ -55,13 +49,13 @@ public class Server {
 
 	}
 
-	public void run() throws SQLException {
+	public void run() {
 
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			ServerBootstrap bootstrap = new ServerBootstrap()
-					.group(bossGroup)
+					.group(bossGroup, workerGroup)
 					.channel(NioServerSocketChannel.class)
 					.localAddress(port);
 			bootstrap.childHandler(new ChatServerInitializer());
@@ -93,7 +87,7 @@ public class Server {
 
 				//start to read next message again
 
-					startRead(channel);
+				startRead(channel);
 			}
 
 			@Override

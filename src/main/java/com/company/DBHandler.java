@@ -53,7 +53,7 @@ public class DBHandler {
 		} else {
 			resultSet = preparedStatement.executeQuery();
 //			JSONObject jsonObject = new JSONObject();
-			StringBuilder out = new StringBuilder("");
+			StringBuilder out = new StringBuilder();
 			System.out.println(resultSet.getMetaData());
 			System.out.println(resultSet.getMetaData().getColumnCount());
 			try {

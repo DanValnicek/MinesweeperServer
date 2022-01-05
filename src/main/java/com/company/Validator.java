@@ -32,7 +32,7 @@ public class Validator {
 		valid(args.get(0), "errors", notification)
 				.mustNotBeBlank("Name is blank!")
 				.lengthMustBeWithin(3, 25, "Name must be withing 3 - 25 characters!")
-				.must(containsAllowedSymbols(), "Username isn't alphanumeric with dot and undrscore!");
+				.must(containsAllowedSymbols(), "Username isn't alphanumeric with dot and underscore!");
 		valid(args.get(1), "errors", notification).mustNotBeBlank("Password is blank");
 		return notification.getMessages().get("errors");
 	}

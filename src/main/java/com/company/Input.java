@@ -1,5 +1,6 @@
 package com.company;
 
+import Game.JsonGenerator;
 import com.mysql.cj.xdevapi.DbDoc;
 import com.mysql.cj.xdevapi.JsonString;
 import org.json.simple.JSONObject;

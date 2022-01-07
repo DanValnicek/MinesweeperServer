@@ -5,4 +5,5 @@ public enum MessageTypes {
 	n, //=> notification
 	q, //=> query
 	i, //=> internal
+	g, //=> game
 }

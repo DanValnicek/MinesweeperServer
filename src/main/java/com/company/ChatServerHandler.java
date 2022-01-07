@@ -1,5 +1,6 @@
 package com.company;
 
+import Game.JsonGenerator;
 import com.mysql.cj.xdevapi.JsonParser;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -43,7 +44,6 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 		channels.remove(ctx.channel());
 	}
 
-	//TODO:
 	public void channelRead0(ChannelHandlerContext ctx, String message) throws Exception {
 		System.out.println("idk channelRead");
 //		for (Channel channel : channels) {
@@ -58,17 +58,19 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 			if (callBack.get("message") == null) {
 				if (input.operation.startsWith("u") || input.operation.startsWith("q")) {
 					callBack = dbHandler.executeQuery(input.args, input.operation);
-				} else {
+				} else if (input.operation.startsWith("i")) {
+					InternalRequestHandler internalRequestHandler = new InternalRequestHandler(ctx.channel());
+
 					callBack = null;
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			callBack = JsonGenerator.createCallback(i, e.toString());
+			callBack = JsonGenerator.createCallback(MessageTypes.e, e.toString());
 		}
 		if (callBack != null) {
 			System.out.println(callBack);
-			ctx.channel().writeAndFlush( callBack + "\n");
+			ctx.channel().writeAndFlush(callBack + "\n");
 		}
 	}
 //            }

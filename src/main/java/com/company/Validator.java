@@ -16,11 +16,7 @@ public class Validator {
 //	}
 
 	public List<String> Register(ArrayList<String> args) {
-		Notification notification = new Notification();
-		valid(args.get(0), "errors", notification)
-				.mustNotBeBlank("Name is blank!")
-				.lengthMustBeWithin(3, 25, "Name must be withing 3 - 25 characters!")
-				.must(containsAllowedSymbols(), "Username isn't alphanumeric with dot and undrscore!");
+		Notification notification = validateUsername(args.get(0));
 		valid(args.get(1), "errors", notification).mustNotBeBlank("Password is blank")
 				.lengthMustBeWithin(8, 50, "Password must be within 8 - 50 characters!")
 				.must(containDigits().and(containLetters()), "Password must contain at least 1 digit and 1 letter!");
@@ -28,13 +24,22 @@ public class Validator {
 	}
 
 	public List<String> Login(ArrayList<String> args) {
+		Notification notification = validateUsername(args.get(1));
+		valid(args.get(0), "errors", notification).mustNotBeBlank("Password is blank");
+		return notification.getMessages().get("errors");
+	}
+
+	public List<String> Connect(String username) {
+		return validateUsername(username).getMessages("errors");
+	}
+
+	private Notification validateUsername(String username) {
 		Notification notification = new Notification();
-		valid(args.get(0), "errors", notification)
+		valid(username, "errors", notification)
 				.mustNotBeBlank("Name is blank!")
 				.lengthMustBeWithin(3, 25, "Name must be withing 3 - 25 characters!")
 				.must(containsAllowedSymbols(), "Username isn't alphanumeric with dot and underscore!");
-		valid(args.get(1), "errors", notification).mustNotBeBlank("Password is blank");
-		return notification.getMessages().get("errors");
+		return notification;
 	}
 
 	private Predicate<String> containDigits() {

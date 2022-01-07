@@ -1,5 +1,6 @@
-package com.company;
+package Game;
 
+import com.company.MessageTypes;
 import org.json.simple.JSONObject;
 
 public class JsonGenerator {
@@ -12,6 +13,14 @@ public class JsonGenerator {
 	public static JSONObject createCallback(MessageTypes type, Object message) {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("messageType", type.toString());
+		jsonObject.put("message", message);
+		return jsonObject;
+	}
+
+	public static JSONObject createGameMessage(GameMessageTypes type, Object message) {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("messageType", MessageTypes.g.toString());
+		jsonObject.put("gameMessageType", type);
 		jsonObject.put("message", message);
 		return jsonObject;
 	}

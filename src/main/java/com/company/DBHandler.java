@@ -1,12 +1,14 @@
 package com.company;
 
+import Game.JsonGenerator;
 import org.json.simple.JSONObject;
 
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
 
-import static com.company.MessageTypes.*;
+import static com.company.MessageTypes.i;
+import static com.company.MessageTypes.q;
 
 public class DBHandler {
 	static Connection connection;
@@ -21,10 +23,14 @@ public class DBHandler {
 //			System.out.println("");
 //		}
 //	}
-	Map<String, String> updateQueries = Map.of("uRegister", "insert into minesweeperDatabase.Users (userName, password) VALUES ( ?, SHA2(CONCAT(NOW(),?),256))");
+	Map<String, String> updateQueries = Map.of(
+//		"uRegister", "insert into minesweeperDatabase.Users (userName, password) VALUES ( ?, SHA2(CONCAT(NOW(),?),256))",
+			"uRegister", "call registerUser(?,?)",
+			"uConnect", "call userConnect(?,?)");
 	Map<String, String> queries = Map.of(
 //			"qLogin","select IF(password = SHA2(CONCAT(registered, ?), 256),JSON_ARRAY('true'),JSON_ARRAY('false'))from minesweeperDatabase.Users where userName = ?"
-			"qLogin", "select IF(password = SHA2(CONCAT(registered, ?), 256),'success','fail')from minesweeperDatabase.Users where userName = ?"
+			"qLogin", "select IF(password = SHA2(CONCAT(registered, ?), 256),'success','fail')from minesweeperDatabase.Users where userName = ?",
+			"qFindUser", "call findUsername(?)"
 	);
 
 	public DBHandler() {
@@ -39,7 +45,7 @@ public class DBHandler {
 			preparedStatement = connection.prepareStatement(queries.get(operation));
 		}
 		if (preparedStatement == null) {
-			return JsonGenerator.createCallback(e, "Operation " + operation + " is invalid!");
+			return JsonGenerator.createCallback(i, "Operation " + operation + " is invalid!");
 		}
 		for (int i = 0; i < args.size(); i++) {
 //			System.out.println(i + 1);

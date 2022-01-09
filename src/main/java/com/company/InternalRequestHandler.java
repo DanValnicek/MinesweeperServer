@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.company.MessageTypes.e;
 
@@ -23,8 +24,10 @@ public class InternalRequestHandler {
 //		MultiplayerGame.addPlayer(incomingChannel,);
 	}
 
-	public void Connect(ArrayList args) throws SQLException {
-		dbHandler.executeQuery(args, incomingChannel.remoteAddress().toString());
+	public void Connect(ArrayList<String> args) throws SQLException {
+		args.add(incomingChannel.remoteAddress().toString());
+		System.out.println(Arrays.toString(args.toArray()));
+		dbHandler.executeQuery(args, "qConnect");
 	}
 
 	public JSONObject execute(String operation, ArrayList args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
@@ -32,6 +35,5 @@ public class InternalRequestHandler {
 		return JsonGenerator.createCallback(e, method.invoke(this, args));
 	}
 	//TODO: leaveGame method
-	//TODO:
 
 }

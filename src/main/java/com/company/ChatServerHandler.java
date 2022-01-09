@@ -10,6 +10,9 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.json.simple.JSONObject;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static com.company.MessageTypes.i;
 
 public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
@@ -18,18 +21,24 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 	DBHandler dbHandler = new DBHandler();
 
 	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		ctx.fireChannelUnregistered();
+		ctx.channel().closeFuture();
+	}
+
+	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		System.out.println("idk handlerAdded");
 		Channel incoming = ctx.channel();
-		System.out.println(incoming.toString());
+		System.out.println(incoming.remoteAddress());
 		System.out.println(channels);
 
-		channels.removeIf(channel -> channel.localAddress() == incoming.localAddress());
-
+		channels.removeIf(channel -> channel.remoteAddress().equals(incoming.remoteAddress()));
+		System.out.println(Arrays.toString(channels.toArray()));
 		channels.add(incoming);
+		System.out.println(JsonGenerator.createCallback(i, "[SERVER] - " + incoming.remoteAddress() + " has joined!\n"));
 		for (Channel channel : channels) {
 			channel.writeAndFlush(JsonGenerator.createCallback(i, "[SERVER] - " + incoming.remoteAddress() + " has joined!"));
-			System.out.println(JsonGenerator.createCallback(i, "[SERVER] - " + incoming.remoteAddress() + " has joined!\n"));
 		}
 	}
 
@@ -37,6 +46,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
 		System.out.println("idk handlerRemoved");
 		Channel incoming = ctx.channel();
+		dbHandler.executeQuery(List.of(incoming.remoteAddress().toString()), "uDisconnect");
 		for (Channel channel : channels) {
 			channel.writeAndFlush(JsonGenerator.createCallback(i, "[SERVER] - " + incoming.remoteAddress() + " has left!"));
 			System.out.println("[SERVER] - " + incoming.remoteAddress() + " has left!\n");
@@ -60,7 +70,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 					callBack = dbHandler.executeQuery(input.args, input.operation);
 				} else if (input.operation.startsWith("i")) {
 					InternalRequestHandler internalRequestHandler = new InternalRequestHandler(ctx.channel());
-
+					internalRequestHandler.execute(input.operation, input.args);
 					callBack = null;
 				}
 			}

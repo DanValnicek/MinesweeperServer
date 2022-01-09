@@ -21,15 +21,18 @@ public class MultiplayerGame {
 		players.put(playerChannel, username);
 	}
 
-//	private void prepareGame() {
-//		map = MapGenerator.randMinesGen(900, 450);
-//		players.forEach(player -> player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.p, map)));
-//	}
-//
-//	private void startGame() {
-//		startTime = System.currentTimeMillis();
-//		players.forEach(player -> player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.s, null)));
-//	}
+	private void prepareGame() {
+		map = MapGenerator.randMinesGen(900, 450);
+		players.forEach((player, time) -> player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.p, map)));
+	}
+
+	//
+	private void startGame() {
+		startTime = System.currentTimeMillis();
+		players.forEach((player, time) -> {
+			player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.s, null));
+		});
+	}
 
 	public void playerFinished(Channel playerChannel) {
 		finished.put(playerChannel, System.currentTimeMillis() - startTime);
@@ -39,5 +42,4 @@ public class MultiplayerGame {
 
 	//TODO: startGame method
 	//TODO: ending algorithm
-	//TODO:
 }

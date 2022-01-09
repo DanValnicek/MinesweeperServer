@@ -23,14 +23,10 @@ public class Validator {
 		return notification.getMessages().get("errors");
 	}
 
-	public List<String> Login(ArrayList<String> args) {
+	public List<String> Connect(ArrayList<String> args) {
 		Notification notification = validateUsername(args.get(1));
 		valid(args.get(0), "errors", notification).mustNotBeBlank("Password is blank");
 		return notification.getMessages().get("errors");
-	}
-
-	public List<String> Connect(String username) {
-		return validateUsername(username).getMessages("errors");
 	}
 
 	private Notification validateUsername(String username) {

@@ -22,6 +22,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		System.out.println("unregistered " + ctx.channel().remoteAddress());
 		ctx.fireChannelUnregistered();
 		ctx.channel().closeFuture();
 	}

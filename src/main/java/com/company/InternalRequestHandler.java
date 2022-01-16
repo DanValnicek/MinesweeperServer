@@ -9,8 +9,10 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.company.MessageTypes.e;
+import static com.company.MessageTypes.i;
 
 public class InternalRequestHandler {
 	Channel incomingChannel;
@@ -20,19 +22,35 @@ public class InternalRequestHandler {
 		this.incomingChannel = incomingChannel;
 	}
 
-	public void joinToGame() {
-//		MultiplayerGame.addPlayer(incomingChannel,);
+	public void joinToGame() throws SQLException {
+		Main.gamesHandler.getLastGame().addPlayer(incomingChannel, dbHandler.executeQuery(
+				List.of(incomingChannel.remoteAddress().toString()),
+				"qFindUser").get("message").toString());
 	}
 
-	public void Connect(ArrayList<String> args) throws SQLException {
+	public void reportFinishedMap(ArrayList args) {
+		Main.gamesHandler.getGame((long) args.get(0));
+	}
+
+	public JSONObject Connect(ArrayList<String> args) throws SQLException {
 		args.add(incomingChannel.remoteAddress().toString());
 		System.out.println(Arrays.toString(args.toArray()));
-		dbHandler.executeQuery(args, "qConnect");
+		return dbHandler.executeQuery(args, "qConnect");
 	}
 
-	public JSONObject execute(String operation, ArrayList args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+	public JSONObject execute(String operation, ArrayList args) throws InvocationTargetException, NoSuchMethodException {
 		Method method = this.getClass().getDeclaredMethod(operation.substring(1), ArrayList.class);
-		return JsonGenerator.createCallback(e, method.invoke(this, args));
+		Object callback;
+		try {
+			callback = method.invoke(this, args);
+			if (!(callback instanceof JSONObject)) {
+				System.out.println("not jsonobject");
+				callback = JsonGenerator.createCallback(i, callback);
+			}
+		} catch (IllegalAccessException ex) {
+			callback = JsonGenerator.createCallback(e, ex.getMessage());
+		}
+		return (JSONObject) callback;
 	}
 	//TODO: leaveGame method
 

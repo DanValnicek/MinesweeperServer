@@ -7,5 +7,5 @@ public enum GameMessageTypes {
 	n, //=>notify
 	e, //=>error
 	f, //=>finished
-
+	w,//=>winner
 }

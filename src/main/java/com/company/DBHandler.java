@@ -25,13 +25,13 @@ public class DBHandler {
 //	}
 	Map<String, String> updateQueries = Map.of(
 //		"uRegister", "insert into minesweeperDatabase.Users (userName, password) VALUES ( ?, SHA2(CONCAT(NOW(),?),256))",
-			"uRegister", "call registerUser(?,?)",
-			"uDisconnect", "call disconnect(?)"
+			"uRegister", "call registerUser(?,?)",//username,password
+			"uDisconnect", "call disconnect(?)" //remoteAddress
 	);
 	Map<String, String> queries = Map.of(
 //			"qLogin","select IF(password = SHA2(CONCAT(registered, ?), 256),JSON_ARRAY('true'),JSON_ARRAY('false'))from minesweeperDatabase.Users where userName = ?"
-			"qFindUser", "call findUsername(?)",
-			"qConnect", "call userConnect(?,?,?)"
+			"qFindUser", "call findUsername(?)",//remoteAddress
+			"qConnect", "call userConnect(?,?,?)"//username,password,remoteAddress
 	);
 
 	public DBHandler() {

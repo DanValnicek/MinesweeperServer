@@ -10,7 +10,9 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.json.simple.JSONObject;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static com.company.MessageTypes.i;
@@ -21,23 +23,15 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 	DBHandler dbHandler = new DBHandler();
 
 	@Override
-	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-		System.out.println("unregistered " + ctx.channel().remoteAddress());
-		ctx.fireChannelUnregistered();
-		ctx.channel().closeFuture();
-	}
-
-	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		System.out.println("idk handlerAdded");
 		Channel incoming = ctx.channel();
 		System.out.println(incoming.remoteAddress());
 		System.out.println(channels);
-
 		channels.removeIf(channel -> channel.remoteAddress().equals(incoming.remoteAddress()));
 		System.out.println(Arrays.toString(channels.toArray()));
 		channels.add(incoming);
-		System.out.println(JsonGenerator.createCallback(i, "[SERVER] - " + incoming.remoteAddress() + " has joined!\n"));
+		System.out.println(JsonGenerator.createCallback(i, new Timestamp(new Date().getTime()) + "[SERVER] - " + incoming.remoteAddress() + " has joined!\n"));
 		for (Channel channel : channels) {
 			channel.writeAndFlush(JsonGenerator.createCallback(i, "[SERVER] - " + incoming.remoteAddress() + " has joined!"));
 		}
@@ -45,7 +39,9 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
 	@Override
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-		System.out.println("idk handlerRemoved");
+		StackTraceElement[] stackTraceElement = Thread.currentThread().getStackTrace();
+		System.out.println(Arrays.toString(stackTraceElement));
+		System.out.println(ctx.channel().remoteAddress() + " handlerRemoved");
 		Channel incoming = ctx.channel();
 		dbHandler.executeQuery(List.of(incoming.remoteAddress().toString()), "uDisconnect");
 		for (Channel channel : channels) {
@@ -59,6 +55,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 		System.out.println("idk channelRead");
 //		for (Channel channel : channels) {
 //            if (channel != incoming) {
+		if (message.equals("disconnect")) ctx.close();
 		System.out.println("[" + ctx.channel().remoteAddress() + "] " + message + "\n");
 		JSONObject callBack;
 
@@ -71,8 +68,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 					callBack = dbHandler.executeQuery(input.args, input.operation);
 				} else if (input.operation.startsWith("i")) {
 					InternalRequestHandler internalRequestHandler = new InternalRequestHandler(ctx.channel());
-					internalRequestHandler.execute(input.operation, input.args);
-					callBack = null;
+					callBack = internalRequestHandler.execute(input.operation, input.args);
 				}
 			}
 		} catch (Exception e) {
@@ -84,7 +80,13 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 			ctx.channel().writeAndFlush(callBack + "\n");
 		}
 	}
-//            }
+
+	//            }
+// Handler should handle the ReadTimeoutException.
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+			throws Exception {
+		super.exceptionCaught(ctx, cause);
+	}
 }
 
 

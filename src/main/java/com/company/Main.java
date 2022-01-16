@@ -4,8 +4,8 @@ import java.sql.SQLException;
 
 
 public class Main {
+	static GamesHandler gamesHandler = new GamesHandler();
 
-DBHandler dbHandler = new DBHandler();
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
 		Class.forName("com.mysql.cj.jdbc.Driver");

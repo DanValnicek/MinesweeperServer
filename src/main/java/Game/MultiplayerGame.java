@@ -1,45 +1,72 @@
 package Game;
 
-import com.company.DBHandler;
 import io.netty.channel.Channel;
+import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 public class MultiplayerGame {
-	private static HashMap<Channel, String> players;
-	private final DBHandler dbHandler = new DBHandler();
+	public boolean started = false;
+	private HashMap<Channel, String> players;
 	private LinkedHashMap<Channel, Long> finished;
+	@Getter
 	private long startTime;
 	private int[] map;
+	private Timer countdown;
 
 	public MultiplayerGame() {
-
+		map = MapGenerator.randMinesGen(100, 20);
 	}
 
-	public static void addPlayer(Channel playerChannel, String username) {
+	public void addPlayer(Channel playerChannel, String username) {
 		players.put(playerChannel, username);
+		playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.p, map));
+		if (players.size() > 4) {
+			started = true;
+			startGame();
+		}
 	}
 
-	private void prepareGame() {
-		map = MapGenerator.randMinesGen(900, 450);
-		players.forEach((player, time) -> player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.p, map)));
-	}
-
-	//
 	private void startGame() {
 		startTime = System.currentTimeMillis();
 		players.forEach((player, time) -> {
-			player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.s, null));
+			player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.s, startTime));
 		});
 	}
 
 	public void playerFinished(Channel playerChannel) {
 		finished.put(playerChannel, System.currentTimeMillis() - startTime);
-//		players.forEach(player -> {player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.f, Arrays.asList( finished.get(playerChannel)))});
+		if (players.size() == 2) {
+			players.forEach((player, username) -> {
+				if (!finished.containsKey(player)) {
+					player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, "Bol si eliminovaný"));
+				} else {
+					playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.w, "Vyhral si!"));
+				}
+			});
+		}
+		if (countdown == null) startCountdown();
+		players.forEach((player, username) -> player.writeAndFlush(
+				JsonGenerator.createGameMessage(GameMessageTypes.f, List.of(finished.get(playerChannel)))
+		));
 	}
 
+	private void startCountdown() {
+		countdown = new Timer();
+		countdown.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				map = MapGenerator.randMinesGen(100, 20);
+				players.forEach((player, username) -> {
+					if (!finished.containsKey(player)) {
+						player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, "Bol si eliminovaný"));
+					} else {
+						player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.p, map));
+					}
+					startGame();
+				});
+			}
+		}, 30000);
+	}
 
-	//TODO: startGame method
-	//TODO: ending algorithm
 }

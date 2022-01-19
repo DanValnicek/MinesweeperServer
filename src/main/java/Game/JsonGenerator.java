@@ -19,7 +19,6 @@ public class JsonGenerator {
 
 	public static JSONObject createGameMessage(GameMessageTypes type, Object message) {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("messageType", MessageTypes.g.toString());
 		jsonObject.put("gameMessageType", type);
 		jsonObject.put("message", message);
 		return jsonObject;

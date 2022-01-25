@@ -18,6 +18,10 @@ public class Validator {
 		return null;
 	}
 
+	public List<String> LeaveGame(ArrayList<String> arrayList) {
+		return null;
+	}
+
 	public List<String> Register(ArrayList<String> args) {
 		Notification notification = validateUsername(args.get(0));
 		valid(args.get(1), "errors", notification).mustNotBeBlank("Password is blank")

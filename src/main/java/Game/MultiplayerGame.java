@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 public class MultiplayerGame {
 	public boolean started = false;
-	private HashMap<Channel, String> players = new HashMap<>();
-	private LinkedHashMap<Channel, Long> finished = new LinkedHashMap<>();
+	private final HashMap<Channel, String> players = new HashMap<>();
+	private final LinkedHashMap<Channel, Long> finished = new LinkedHashMap<>();
 	@Getter
 	private long startTime;
 	private String setupMessage;
@@ -34,6 +34,9 @@ public class MultiplayerGame {
 		playerChannel.writeAndFlush(setupMessage + "\n");
 		System.out.println(players.size());
 		System.out.println(players.toString());
+		players.forEach((player, user) -> {
+			player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pa, List.of(username, players.size())));
+		});
 		if (players.size() >= 4) {
 			started = true;
 			ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
@@ -46,7 +49,7 @@ public class MultiplayerGame {
 		players.remove(playerChannel);
 		finished.remove(playerChannel);
 		players.forEach((playerChan, username) -> {
-			playerChan.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.n, user + " sa odpojil!\n"));
+			playerChan.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pr, List.of(user + " sa odpojil!\n", players.size())));
 		});
 	}
 
@@ -62,7 +65,8 @@ public class MultiplayerGame {
 		if (players.size() == 1) {
 			players.forEach((player, username) -> {
 				if (!finished.containsKey(player)) {
-					player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, "Bol si eliminovaný\n"));
+					players.remove(player);
+					player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, List.of("Bol si eliminovaný", null) + "\n"));
 				} else {
 					playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.w, "Vyhral si!\n"));
 				}
@@ -82,7 +86,8 @@ public class MultiplayerGame {
 				setupMessage = createSetupMessage(10, 10, 20);
 				players.forEach((player, username) -> {
 					if (!finished.containsKey(player)) {
-						player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, "Bol si eliminovaný\n"));
+						players.remove(player);
+						player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, List.of("Bol si eliminovaný", null) + "\n"));
 					} else {
 						player.writeAndFlush(setupMessage + "\n");
 					}

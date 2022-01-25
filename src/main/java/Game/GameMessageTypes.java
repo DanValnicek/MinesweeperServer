@@ -8,4 +8,6 @@ public enum GameMessageTypes {
 	e, //=>error
 	f, //=>finished
 	w,//=>winner
+	pa,//=>player added
+	pr,//=>player removed
 }

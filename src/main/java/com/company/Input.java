@@ -17,15 +17,18 @@ public class Input extends Validator {
 	String operation;
 
 	public Input(DbDoc json) {
-		List<JsonString> jsonStrings = (List<JsonString>) json.get("args");
-		for (JsonString string : jsonStrings) {
-			this.args.add(string.getString());
+		if (json.containsKey("args")) {
+			List<JsonString> jsonStrings = (List<JsonString>) json.get("args");
 
+			for (JsonString string : jsonStrings) {
+				this.args.add(string.getString());
+			}
 		}
 		this.operation = ((JsonString) json.get("operation")).getString();
 	}
 
 	public JSONObject validate() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+		if (operation.equals("iJoinToGame")) return JsonGenerator.createCallback(e, null);
 		Validator validator = new Validator();
 		Method method = validator.getClass().getDeclaredMethod(operation.substring(1), ArrayList.class);
 		return JsonGenerator.createCallback(e, method.invoke(validator, args));

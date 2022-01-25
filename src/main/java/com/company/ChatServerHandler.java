@@ -22,6 +22,10 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 	private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 	DBHandler dbHandler = new DBHandler();
 
+	public static void sendMessage(Channel channel, JSONObject message) {
+		channel.writeAndFlush(message);
+	}
+
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		System.out.println("idk handlerAdded");

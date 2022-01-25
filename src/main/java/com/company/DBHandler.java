@@ -30,7 +30,7 @@ public class DBHandler {
 	);
 	Map<String, String> queries = Map.of(
 //			"qLogin","select IF(password = SHA2(CONCAT(registered, ?), 256),JSON_ARRAY('true'),JSON_ARRAY('false'))from minesweeperDatabase.Users where userName = ?"
-			"qFindUser", "call findUsername(?)",//remoteAddress
+			"qFindUser", "call findUsername(?,?)",//remoteAddress
 			"qConnect", "call userConnect(?,?,?)"//username,password,remoteAddress
 	);
 
@@ -74,14 +74,14 @@ public class DBHandler {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			return JsonGenerator.createCallback(q, operation + "-" + out);
+			return JsonGenerator.createCallback(q, out);
 		}
 	}
 
 	public void connect(String password) throws SQLException {
 		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/minesweeperDatabase", "workServ", password);
+		connection.prepareStatement("delete from connected_users").executeUpdate();
 		System.out.println("Connected to DB");
-//		execQuery(statement.executeQuery("SELECT * FROM Users "));
 	}
 
 

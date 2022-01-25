@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static com.company.MessageTypes.e;
 import static com.company.MessageTypes.i;
@@ -22,14 +21,19 @@ public class InternalRequestHandler {
 		this.incomingChannel = incomingChannel;
 	}
 
-	public void joinToGame() throws SQLException {
+	public void JoinToGame(ArrayList<String> args) throws SQLException {
+		String[] ipAndPort = incomingChannel.remoteAddress().toString().substring(1).split(":");
 		Main.gamesHandler.getLastGame().addPlayer(incomingChannel, dbHandler.executeQuery(
-				List.of(incomingChannel.remoteAddress().toString()),
-				"qFindUser").get("message").toString());
+						Arrays.asList(ipAndPort), "qFindUser")
+				.get("message").toString());
 	}
 
-	public void reportFinishedMap(ArrayList args) {
-		Main.gamesHandler.getGame((long) args.get(0));
+	private void LeaveGame(ArrayList<String> args) {
+		Main.gamesHandler.getGame(Long.parseLong(args.get(0))).deletePlayer(incomingChannel);
+	}
+
+	public void ReportFinishedMap(ArrayList<String> args) {
+		Main.gamesHandler.getGame(Long.parseLong(args.get(0))).playerFinished(incomingChannel);
 	}
 
 	public JSONObject Connect(ArrayList<String> args) throws SQLException {
@@ -43,7 +47,7 @@ public class InternalRequestHandler {
 		Object callback;
 		try {
 			callback = method.invoke(this, args);
-			if (!(callback instanceof JSONObject)) {
+			if (!(callback instanceof JSONObject) && callback != null) {
 				System.out.println("not jsonobject");
 				callback = JsonGenerator.createCallback(i, callback);
 			}
@@ -52,6 +56,5 @@ public class InternalRequestHandler {
 		}
 		return (JSONObject) callback;
 	}
-	//TODO: leaveGame method
 
 }

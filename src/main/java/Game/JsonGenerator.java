@@ -1,7 +1,12 @@
 package Game;
 
 import com.company.MessageTypes;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import java.util.List;
+
+import static Game.GameMessageTypes.p;
 
 public class JsonGenerator {
 
@@ -13,14 +18,25 @@ public class JsonGenerator {
 	public static JSONObject createCallback(MessageTypes type, Object message) {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("messageType", type.toString());
-		jsonObject.put("message", message);
+		if (message != null) jsonObject.put("message", message);
 		return jsonObject;
 	}
 
 	public static JSONObject createGameMessage(GameMessageTypes type, Object message) {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("gameMessageType", type);
-		jsonObject.put("message", message);
+		jsonObject.put("gameMessageType", type.toString());
+		if (message != null) jsonObject.put("message", message);
+		return jsonObject;
+	}
+
+	public static JSONObject createGamePreparationMesssage(int rowCount, int columnCount, List<Integer> minePositions) {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("gameMessageType", p.toString());
+		jsonObject.put("rowCount", rowCount);
+		jsonObject.put("columnCount", columnCount);
+		JSONArray jsonArray = new JSONArray();
+		jsonArray.addAll(minePositions);
+		jsonObject.put("minePositions", jsonArray);
 		return jsonObject;
 	}
 }

@@ -10,10 +10,13 @@ import java.util.function.Predicate;
 import static io.validly.NoteAllValidator.valid;
 
 public class Validator {
-//	public void Validate(String inputType, List<String> args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+	//	public void Validate(String inputType, List<String> args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 //		Method method = Validator.getClass().getDeclaredMethod(inputType.substring(1));
 //		method.invoke(args);
 //	}
+	public List<String> ReportFinishedMap(ArrayList<String> arrayList) {
+		return null;
+	}
 
 	public List<String> Register(ArrayList<String> args) {
 		Notification notification = validateUsername(args.get(0));

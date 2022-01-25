@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class MultiplayerGame {
-	public boolean started = false;
 	private final HashMap<Channel, String> players = new HashMap<>();
 	private final LinkedHashMap<Channel, Long> finished = new LinkedHashMap<>();
+	public boolean started = false;
 	@Getter
 	private long startTime;
 	private String setupMessage;
@@ -33,9 +33,9 @@ public class MultiplayerGame {
 		System.out.println(setupMessage);
 		playerChannel.writeAndFlush(setupMessage + "\n");
 		System.out.println(players.size());
-		System.out.println(players.toString());
+		System.out.println(players);
 		players.forEach((player, user) -> {
-			player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pa, List.of(username, players.size())));
+			player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pcc, List.of(username + " sa pripojil/a", Integer.toString(players.size()))) + "\n");
 		});
 		if (players.size() >= 4) {
 			started = true;
@@ -49,7 +49,7 @@ public class MultiplayerGame {
 		players.remove(playerChannel);
 		finished.remove(playerChannel);
 		players.forEach((playerChan, username) -> {
-			playerChan.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pr, List.of(user + " sa odpojil!\n", players.size())));
+			playerChan.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pcc, List.of(user + " sa odpojil!", Integer.toString(players.size()))) + "\n");
 		});
 	}
 
@@ -60,12 +60,17 @@ public class MultiplayerGame {
 		});
 	}
 
+	public void playerLost(Channel playerChannel) {
+		deletePlayer(playerChannel);
+		playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, List.of("Bol si eliminovaný", null) + "\n"));
+	}
+
 	public void playerFinished(Channel playerChannel) {
 		finished.put(playerChannel, System.currentTimeMillis() - startTime);
 		if (players.size() == 1) {
 			players.forEach((player, username) -> {
 				if (!finished.containsKey(player)) {
-					players.remove(player);
+					deletePlayer(player);
 					player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, List.of("Bol si eliminovaný", null) + "\n"));
 				} else {
 					playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.w, "Vyhral si!\n"));
@@ -86,7 +91,7 @@ public class MultiplayerGame {
 				setupMessage = createSetupMessage(10, 10, 20);
 				players.forEach((player, username) -> {
 					if (!finished.containsKey(player)) {
-						players.remove(player);
+						deletePlayer(player);
 						player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, List.of("Bol si eliminovaný", null) + "\n"));
 					} else {
 						player.writeAndFlush(setupMessage + "\n");

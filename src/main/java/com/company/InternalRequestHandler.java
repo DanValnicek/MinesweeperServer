@@ -28,6 +28,10 @@ public class InternalRequestHandler {
 				.get("message").toString());
 	}
 
+	public void LostGame(ArrayList<String> args) {
+		Main.gamesHandler.getGame(Long.parseLong(args.get(0))).playerLost(incomingChannel);
+	}
+
 	private void LeaveGame(ArrayList<String> args) {
 		Main.gamesHandler.getGame(Long.parseLong(args.get(0))).deletePlayer(incomingChannel);
 	}

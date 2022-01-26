@@ -14,7 +14,8 @@ public class MultiplayerGame {
 	private final LinkedHashMap<Channel, Long> finished = new LinkedHashMap<>();
 	public boolean started = false;
 	@Getter
-	private long startTime;
+//	private long startTime;
+	protected UUID uuid = UUID.randomUUID();
 	private String setupMessage;
 	private Timer countdown;
 
@@ -102,4 +103,7 @@ public class MultiplayerGame {
 		}, 30000);
 	}
 
+	public void sendPlayerCount(Channel playerChannel) {
+		playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pcc, List.of("", Integer.toString(players.size())) + "\n"));
+	}
 }

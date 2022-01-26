@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 
 import static com.company.MessageTypes.e;
 import static com.company.MessageTypes.i;
@@ -28,16 +29,20 @@ public class InternalRequestHandler {
 				.get("message").toString());
 	}
 
+	public void SendPlayerCount(ArrayList<String> args) {
+		Main.gamesHandler.getGame(UUID.fromString(args.get(0))).sendPlayerCount(incomingChannel);
+	}
+
 	public void LostGame(ArrayList<String> args) {
-		Main.gamesHandler.getGame(Long.parseLong(args.get(0))).playerLost(incomingChannel);
+		Main.gamesHandler.getGame(UUID.fromString(args.get(0))).playerLost(incomingChannel);
 	}
 
 	private void LeaveGame(ArrayList<String> args) {
-		Main.gamesHandler.getGame(Long.parseLong(args.get(0))).deletePlayer(incomingChannel);
+		Main.gamesHandler.getGame(UUID.fromString(args.get(0))).deletePlayer(incomingChannel);
 	}
 
 	public void ReportFinishedMap(ArrayList<String> args) {
-		Main.gamesHandler.getGame(Long.parseLong(args.get(0))).playerFinished(incomingChannel);
+		Main.gamesHandler.getGame(UUID.fromString(args.get(0))).playerFinished(incomingChannel);
 	}
 
 	public JSONObject Connect(ArrayList<String> args) throws SQLException {

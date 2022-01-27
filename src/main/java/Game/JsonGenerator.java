@@ -5,6 +5,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.UUID;
 
 import static Game.GameMessageTypes.p;
 
@@ -29,11 +30,12 @@ public class JsonGenerator {
 		return jsonObject;
 	}
 
-	public static JSONObject createGamePreparationMesssage(int rowCount, int columnCount, List<Integer> minePositions) {
+	public static JSONObject createGamePreparationMesssage(int rowCount, int columnCount, List<Integer> minePositions, UUID uuid) {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("gameMessageType", p.toString());
 		jsonObject.put("rowCount", rowCount);
 		jsonObject.put("columnCount", columnCount);
+		jsonObject.put("uuid", uuid.toString());
 		JSONArray jsonArray = new JSONArray();
 		jsonArray.addAll(minePositions);
 		jsonObject.put("minePositions", jsonArray);

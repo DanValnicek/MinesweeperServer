@@ -1,6 +1,5 @@
-package com.company;
+package Game;
 
-import Game.MultiplayerGame;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -19,9 +18,20 @@ public class GamesHandler {
 	}
 
 	public MultiplayerGame getGame(UUID gameUUID) {
-		for (MultiplayerGame game : games) {
-			if (game.getUuid().equals(gameUUID)) return game;
+		if (games.size() > 0) {
+			for (MultiplayerGame game : games) {
+				if (game.getUuid().equals(gameUUID)) return game;
+			}
 		}
 		return null;
+	}
+
+	protected void deleteGame(UUID uuid) {
+		for (int i = 0; i < games.size(); i++) {
+			if (games.get(i).getUuid().equals(uuid)) {
+				games.set(i, null);
+				System.gc();
+			}
+		}
 	}
 }

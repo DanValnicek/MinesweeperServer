@@ -1,10 +1,12 @@
 package com.company;
 
+import Game.GamesHandler;
+
 import java.sql.SQLException;
 
 
 public class Main {
-	static GamesHandler gamesHandler = new GamesHandler();
+	public static GamesHandler gamesHandler = new GamesHandler();
 
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 

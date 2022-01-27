@@ -1,5 +1,6 @@
 package Game;
 
+import com.company.Main;
 import io.netty.channel.Channel;
 import lombok.Getter;
 
@@ -13,9 +14,9 @@ public class MultiplayerGame {
 	private final HashMap<Channel, String> players = new HashMap<>();
 	private final LinkedHashMap<Channel, Long> finished = new LinkedHashMap<>();
 	public boolean started = false;
+	protected @Getter UUID uuid = UUID.randomUUID();
 	@Getter
-//	private long startTime;
-	protected UUID uuid = UUID.randomUUID();
+	private long startTime;
 	private String setupMessage;
 	private Timer countdown;
 
@@ -25,7 +26,7 @@ public class MultiplayerGame {
 
 	private String createSetupMessage(int rowCount, int columnCount, int mineCount) {
 		List<Integer> map = Arrays.stream(MapGenerator.randMinesGen(rowCount * columnCount, mineCount)).boxed().collect(Collectors.toList());
-		setupMessage = JsonGenerator.createGamePreparationMesssage(rowCount, columnCount, map).toString();
+		setupMessage = JsonGenerator.createGamePreparationMesssage(rowCount, columnCount, map, uuid).toString();
 		return setupMessage;
 	}
 
@@ -38,10 +39,9 @@ public class MultiplayerGame {
 		players.forEach((player, user) -> {
 			player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pcc, List.of(username + " sa pripojil/a", Integer.toString(players.size()))) + "\n");
 		});
-		if (players.size() >= 4) {
+		if (players.size() >= 3) {
 			started = true;
-			ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-			exec.schedule(this::startGame, 5, TimeUnit.SECONDS);
+			startGame();
 		}
 	}
 
@@ -52,35 +52,58 @@ public class MultiplayerGame {
 		players.forEach((playerChan, username) -> {
 			playerChan.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pcc, List.of(user + " sa odpojil!", Integer.toString(players.size()))) + "\n");
 		});
+		if (players.size() <= 1) {
+			players.forEach((player, username) -> {
+				playerWon(player);
+			});
+		}
+	}
+
+	private void playerWon(Channel playerChannel) {
+		playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.w, "Vyhral si!") + "\n");
+		Main.gamesHandler.deleteGame(uuid);
 	}
 
 	private void startGame() {
-		startTime = System.currentTimeMillis();
-		players.forEach((player, username) -> {
-			player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.s, startTime) + "\n");
-		});
+		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+		exec.schedule(() -> {
+			startTime = System.currentTimeMillis();
+			players.forEach((player, username) -> {
+				player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.s, null) + "\n");
+			});
+		}, 5, TimeUnit.SECONDS);
 	}
 
 	public void playerLost(Channel playerChannel) {
 		deletePlayer(playerChannel);
-		playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, List.of("Bol si eliminovaný", null) + "\n"));
+		playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, "Bol si eliminovaný") + "\n");
+
 	}
 
 	public void playerFinished(Channel playerChannel) {
 		finished.put(playerChannel, System.currentTimeMillis() - startTime);
 		if (players.size() == 1) {
+//			players.forEach((player, username) -> {
+//				if (!finished.containsKey(player)) {
+//					deletePlayer(player);
+//					player.writeAndFlush(
+//							JsonGenerator.createGameMessage(GameMessageTypes.t, "Bol si eliminovaný") + "\n");
+//				} else {
+			playerChannel.writeAndFlush(
+					JsonGenerator.createGameMessage(GameMessageTypes.w, "Vyhral si!") + "\n");
+//				}
+//			});
+		}
+		if (players.size() == finished.size()) {
 			players.forEach((player, username) -> {
-				if (!finished.containsKey(player)) {
-					deletePlayer(player);
-					player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, List.of("Bol si eliminovaný", null) + "\n"));
-				} else {
-					playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.w, "Vyhral si!\n"));
-				}
+				player.writeAndFlush(setupMessage + "\n");
 			});
+			startGame();
 		}
 		if (countdown == null) startCountdown();
 		players.forEach((player, username) -> player.writeAndFlush(
-				JsonGenerator.createGameMessage(GameMessageTypes.f, List.of(30, players.get(playerChannel) + " finished!\n"))
+				JsonGenerator.createGameMessage(GameMessageTypes.f, List.of("30",
+						players.get(playerChannel) + " finished!")) + "\n"
 		));
 	}
 
@@ -93,7 +116,7 @@ public class MultiplayerGame {
 				players.forEach((player, username) -> {
 					if (!finished.containsKey(player)) {
 						deletePlayer(player);
-						player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, List.of("Bol si eliminovaný", null) + "\n"));
+						player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, "Bol si eliminovaný") + "\n");
 					} else {
 						player.writeAndFlush(setupMessage + "\n");
 					}
@@ -104,6 +127,6 @@ public class MultiplayerGame {
 	}
 
 	public void sendPlayerCount(Channel playerChannel) {
-		playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pcc, List.of("", Integer.toString(players.size())) + "\n"));
+		playerChannel.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.pcc, List.of("", Integer.toString(players.size()))) + "\n");
 	}
 }

@@ -11,6 +11,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import org.json.simple.JSONObject;
 
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -60,7 +61,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 //		for (Channel channel : channels) {
 //            if (channel != incoming) {
 		if (message.equals("disconnect")) ctx.close();
-		System.out.println("[" + ctx.channel().remoteAddress() + "] " + message + "\n");
+		System.out.println("[" + ctx.channel().remoteAddress() + " " + LocalTime.now() + "] " + message + "\n");
 		JSONObject callBack;
 
 		try {

@@ -13,13 +13,14 @@ import java.util.stream.Collectors;
 public class MultiplayerGame {
 	private final HashMap<Channel, String> players = new HashMap<>();
 	private final LinkedHashMap<Channel, Long> finished = new LinkedHashMap<>();
-	protected @Getter UUID uuid = UUID.randomUUID();
+	protected @Getter UUID uuid;
 	@Getter
 	private long startTime;
 	private String setupMessage;
 	private Timer countdown;
 
-	public MultiplayerGame() {
+	public MultiplayerGame(UUID uuid) {
+		this.uuid = uuid;
 		setupMessage = createSetupMessage(10, 10, 20);
 	}
 
@@ -56,6 +57,15 @@ public class MultiplayerGame {
 				playerWon(player);
 			});
 			Main.gamesHandler.deleteGame(uuid);
+			return;
+		}
+		if (players.size() == finished.size()) {
+			countdown.cancel();
+			countdown = null;
+			players.forEach((player, username) -> {
+				player.writeAndFlush(setupMessage + "\n");
+			});
+			startGame();
 		}
 	}
 
@@ -87,13 +97,16 @@ public class MultiplayerGame {
 		if (players.size() == 1) {
 			playerWon(playerChannel);
 			countdown.cancel();
+			countdown = null;
 		}
 		if (players.size() == finished.size()) {
 			countdown.cancel();
+			countdown = null;
 			players.forEach((player, username) -> {
 				player.writeAndFlush(setupMessage + "\n");
 			});
 			startGame();
+			return;
 		}
 		if (countdown == null) {
 			startCountdown();
@@ -109,21 +122,23 @@ public class MultiplayerGame {
 		));
 	}
 
-	private void startCountdown() {
+	private synchronized void startCountdown() {
 		countdown = new Timer();
 		countdown.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				setupMessage = createSetupMessage(10, 10, 20);
+				ArrayList<Channel> toRemove = new ArrayList();
 				players.forEach((player, username) -> {
 					if (!finished.containsKey(player)) {
 						player.writeAndFlush(JsonGenerator.createGameMessage(GameMessageTypes.t, "Bol si eliminovaný") + "\n");
-						deletePlayer(player);
-					} else {
+						toRemove.add(player);
+					} else if (players.size() <= 1) {
 						player.writeAndFlush(setupMessage + "\n");
 					}
-					startGame();
 				});
+				toRemove.forEach(player -> deletePlayer(player));
+				if (players.size() <= 1) startGame();
 			}
 		}, 30000);
 

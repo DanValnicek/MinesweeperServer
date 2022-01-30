@@ -26,7 +26,8 @@ public class DBHandler {
 	Map<String, String> updateQueries = Map.of(
 //		"uRegister", "insert into minesweeperDatabase.Users (userName, password) VALUES ( ?, SHA2(CONCAT(NOW(),?),256))",
 			"uRegister", "call registerUser(?,?)",//username,password
-			"uDisconnect", "call disconnect(?)" //remoteAddress
+			"uDisconnect", "call disconnect(?)", //remoteAddress
+			"uMapSave", "call addPlayedMap(?,?,?,?,?,?)"//ip,port,map size,game time, number of mines, json of map
 	);
 	Map<String, String> queries = Map.of(
 //			"qLogin","select IF(password = SHA2(CONCAT(registered, ?), 256),JSON_ARRAY('true'),JSON_ARRAY('false'))from minesweeperDatabase.Users where userName = ?"

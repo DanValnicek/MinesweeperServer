@@ -2,6 +2,7 @@ package com.company;
 
 import io.validly.Notification;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +16,10 @@ public class Validator {
 //		method.invoke(args);
 //	}
 	public List<String> ReportFinishedMap(ArrayList<String> arrayList) {
+		return null;
+	}
+
+	public List<String> SaveMap(ArrayList<String> args) throws SQLException {
 		return null;
 	}
 

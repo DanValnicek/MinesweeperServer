@@ -19,6 +19,14 @@ public class Validator {
 		return null;
 	}
 
+	public List<String> ReturnGameHistory(ArrayList<String> arrayList) {
+		return null;
+	}
+
+	public List<String> LogOut(ArrayList<String> arrayList) {
+		return null;
+	}
+
 	public List<String> SaveMap(ArrayList<String> args) throws SQLException {
 		return null;
 	}

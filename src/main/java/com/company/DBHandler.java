@@ -32,7 +32,8 @@ public class DBHandler {
 	Map<String, String> queries = Map.of(
 //			"qLogin","select IF(password = SHA2(CONCAT(registered, ?), 256),JSON_ARRAY('true'),JSON_ARRAY('false'))from minesweeperDatabase.Users where userName = ?"
 			"qFindUser", "call findUsername(?,?)",//remoteAddress
-			"qConnect", "call userConnect(?,?,?)"//username,password,remoteAddress
+			"qConnect", "call userConnect(?,?,?)",//username,password,remoteAddress
+			"qReturnGameHistory", "call playersGames(?)"
 	);
 
 	public DBHandler() {

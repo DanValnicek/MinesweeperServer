@@ -43,12 +43,20 @@ public class InternalRequestHandler {
 		Main.gamesHandler.getGame(UUID.fromString(args.get(0))).sendPlayerCount(incomingChannel);
 	}
 
+	public void LogOut(ArrayList<String> args) throws SQLException {
+		dbHandler.executeQuery(List.of(incomingChannel.remoteAddress().toString()), "uDisconnect");
+	}
+
 	public void LostGame(ArrayList<String> args) {
 		Main.gamesHandler.getGame(UUID.fromString(args.get(0))).playerLost(incomingChannel);
 	}
 
 	private void LeaveGame(ArrayList<String> args) {
 		Main.gamesHandler.getGame(UUID.fromString(args.get(0))).deletePlayer(incomingChannel);
+	}
+
+	private JSONObject ReturnGameHistory(ArrayList<String> args) throws SQLException {
+		return dbHandler.executeQuery(List.of(incomingChannel.remoteAddress().toString()), "qReturnGameHistory");
 	}
 
 	public void ReportFinishedMap(ArrayList<String> args) {

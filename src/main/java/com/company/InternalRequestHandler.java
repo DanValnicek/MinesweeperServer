@@ -36,7 +36,6 @@ public class InternalRequestHandler {
 		args.forEach(list::add);
 		dbHandler.executeQuery(list, "uMapSave");
 
-
 	}
 
 	public void SendPlayerCount(ArrayList<String> args) {
@@ -56,7 +55,7 @@ public class InternalRequestHandler {
 	}
 
 	private JSONObject ReturnGameHistory(ArrayList<String> args) throws SQLException {
-		return dbHandler.executeQuery(List.of(incomingChannel.remoteAddress().toString()), "qReturnGameHistory");
+		return dbHandler.executeQuery(Arrays.asList(incomingChannel.remoteAddress().toString().substring(1).split(":")), "qReturnGameHistory");
 	}
 
 	public void ReportFinishedMap(ArrayList<String> args) {

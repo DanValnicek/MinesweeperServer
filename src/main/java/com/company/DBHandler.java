@@ -33,7 +33,8 @@ public class DBHandler {
 //			"qLogin","select IF(password = SHA2(CONCAT(registered, ?), 256),JSON_ARRAY('true'),JSON_ARRAY('false'))from minesweeperDatabase.Users where userName = ?"
 			"qFindUser", "call findUsername(?,?)",//remoteAddress
 			"qConnect", "call userConnect(?,?,?)",//username,password,remoteAddress
-			"qReturnGameHistory", "call playersGames(?,?)"
+			"qReturnGameHistory", "call playersGames(?,?)",
+			"qReturnLeaderboard", "call returnLeaderboard()"
 	);
 
 	public DBHandler() {
@@ -85,7 +86,6 @@ public class DBHandler {
 		connection.prepareStatement("delete from connected_users").executeUpdate();
 		System.out.println("Connected to DB");
 	}
-
 
 }
 

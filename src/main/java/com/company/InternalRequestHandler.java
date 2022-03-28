@@ -35,7 +35,6 @@ public class InternalRequestHandler {
 		List<String> list = new ArrayList<>(ipAndPort);
 		args.forEach(list::add);
 		dbHandler.executeQuery(list, "uMapSave");
-
 	}
 
 	public void SendPlayerCount(ArrayList<String> args) {

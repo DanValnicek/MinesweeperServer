@@ -27,6 +27,10 @@ public class Validator {
 		return null;
 	}
 
+	public List<String> ReturnLeaderboard(ArrayList<String> arrayList) {
+		return null;
+	}
+
 	public List<String> SaveMap(ArrayList<String> args) throws SQLException {
 		return null;
 	}
